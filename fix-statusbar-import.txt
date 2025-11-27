@@ -1,0 +1,10 @@
+To fix the StatusBar and Style errors in App.tsx, import StatusBar and Style from '@capacitor/status-bar'.
+
+Add this at the top of App.tsx:
+
+import { StatusBar, Style } from '@capacitor/status-bar';
+
+If you do not have '@capacitor/status-bar' installed, run:
+npm install @capacitor/status-bar
+
+This will resolve the missing StatusBar and Style references.
