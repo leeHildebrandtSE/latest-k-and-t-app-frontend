@@ -76,4 +76,4 @@ export function ForgotPassword({ onBack }: { onBack?: () => void }) {
 			</div>
 		</div>
 	);
-Create a forgot password screen that matches the new UI/UX design: blue gradient background, rounded card, bold headings, icon, and modern input/button styling.
+}

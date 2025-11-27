@@ -22,7 +22,6 @@
     "noUncheckedSideEffectImports": false,
 
     /* Path mapping */
-    "ignoreDeprecations": "6.0"
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
