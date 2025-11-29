@@ -33,7 +33,8 @@ export function DriverLayout({
   pageTitle,
   user
 }: DriverLayoutProps) {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false); // For sidebar navigation
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false); // For avatar dropdown
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'my-trips', label: 'My Trips', icon: Calendar },
@@ -145,23 +146,36 @@ export function DriverLayout({
                   <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full shadow-lg" />
                 )}
               </Button>
-              {/* Profile Avatar Dropdown */}
-              <div className="relative group">
-                <button className="focus:outline-none" type="button">
+              {/* Profile Avatar Dropdown - Improved */}
+              <div className="relative">
+                <button className="focus:outline-none" type="button" onClick={() => setProfileMenuOpen((open) => !open)}>
                   <img src={user?.avatar || "/default-avatar.png"} alt="Profile" className="w-10 h-10 rounded-full border-2 border-white shadow-lg object-cover" />
                 </button>
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl py-4 px-4 z-50 hidden group-hover:block">
-                  <div className="flex items-center gap-3 mb-4">
-                    <img src={user?.avatar || "/default-avatar.png"} alt="Profile" className="w-12 h-12 rounded-full border-2 border-white shadow-lg object-cover" />
-                    <div>
-                      <p className="font-semibold text-gray-900">{user?.name || "Driver User"}</p>
-                      <p className="text-sm text-gray-500">{user?.email || "driver@yourdomain.com"}</p>
+                {profileMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl py-6 px-6 z-50 flex flex-col gap-4">
+                    <div className="flex items-center gap-4 mb-4">
+                      <img src={user?.avatar || "/default-avatar.png"} alt="Profile" className="w-12 h-12 rounded-full border-2 border-white shadow-lg object-cover" />
+                      <div className="flex flex-col justify-center min-w-0">
+                        <p className="font-bold text-base text-gray-900 leading-tight mb-1 truncate">{user?.name || "Driver User"}</p>
+                        <p className="text-xs text-gray-500 leading-tight truncate max-w-[140px] overflow-hidden">{user?.email || "driver@yourdomain.com"}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <button className="flex items-center gap-3 w-full text-left py-2 px-3 rounded-lg hover:bg-blue-50 text-blue-900 font-medium transition-all text-sm" onClick={() => { setProfileMenuOpen(false); onTabChange('profile'); }}>
+                        <span className="material-icons text-base align-middle" aria-hidden="true">edit</span>
+                        <span className="align-middle">Edit Profile</span>
+                      </button>
+                      <button className="flex items-center gap-3 w-full text-left py-2 px-3 rounded-lg hover:bg-blue-50 text-blue-900 font-medium transition-all text-sm" onClick={() => { setProfileMenuOpen(false); onTabChange('account-settings'); }}>
+                        <span className="material-icons text-base align-middle" aria-hidden="true">settings</span>
+                        <span className="align-middle">Account Settings</span>
+                      </button>
+                      <button className="flex items-center gap-3 w-full text-left py-2 px-3 rounded-lg hover:bg-red-50 text-red-600 font-medium transition-all text-sm" onClick={() => { setProfileMenuOpen(false); onLogout(); }}>
+                        <span className="material-icons text-base align-middle" aria-hidden="true">logout</span>
+                        <span className="align-middle">Logout</span>
+                      </button>
                     </div>
                   </div>
-                    <button className="w-full text-left py-2 px-3 rounded-lg hover:bg-blue-50 text-blue-900 font-medium mb-2" onClick={() => onTabChange('profile')}>Edit Profile</button>
-                  <button className="w-full text-left py-2 px-3 rounded-lg hover:bg-blue-50 text-blue-900 font-medium mb-2">Account Settings</button>
-                  <button className="w-full text-left py-2 px-3 rounded-lg hover:bg-red-50 text-red-600 font-medium">Logout</button>
-                </div>
+                )}
               </div>
             </div>
           </div>

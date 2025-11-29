@@ -3,13 +3,36 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import { Car, Users, Calendar, Plus } from 'lucide-react';
+import { useState } from 'react';
+import { AddVehicleForm } from './AddVehicleForm';
 
 interface VehicleManagementProps {
   vehicles: Vehicle[];
-  onAddVehicle: () => void;
+  onAddVehicle?: () => void;
 }
 
-export function VehicleManagement({ vehicles, onAddVehicle }: VehicleManagementProps) {
+export function VehicleManagement({ vehicles, onAddVehicle, theme = 'driver' }: VehicleManagementProps & { theme?: 'admin' | 'driver' }) {
+  const [showAddVehicle, setShowAddVehicle] = useState(false);
+  const [localVehicles, setLocalVehicles] = useState(vehicles);
+
+  const handleAddVehicle = (vehicle: { make: string; model: string; registrationNumber: string; color: string; year: string }) => {
+    setLocalVehicles(prev => [
+      {
+        id: Date.now(),
+        make: vehicle.make,
+        model: vehicle.model,
+        registrationNumber: vehicle.registrationNumber,
+        color: vehicle.color,
+        year: vehicle.year,
+        seats: 0,
+        status: 'active',
+      },
+      ...prev
+    ]);
+  };
+
+  const buttonColor = theme === 'admin' ? 'bg-green-700 hover:bg-green-800' : 'bg-blue-900 hover:bg-blue-800';
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
@@ -17,14 +40,22 @@ export function VehicleManagement({ vehicles, onAddVehicle }: VehicleManagementP
           <h1 className="text-3xl font-bold mb-2">Vehicles</h1>
           <p className="text-muted-foreground">Manage your registered vehicles</p>
         </div>
-         <Button onClick={onAddVehicle} className="bg-blue-900 hover:bg-blue-800 text-white">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Vehicle
-        </Button>
+        <>
+          <Button onClick={() => setShowAddVehicle(true)} className={`${buttonColor} text-white`}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Vehicle
+          </Button>
+          <AddVehicleForm
+            open={showAddVehicle}
+            onClose={() => setShowAddVehicle(false)}
+            onSubmit={handleAddVehicle}
+            theme={theme}
+          />
+        </>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {vehicles.map(vehicle => (
+        {localVehicles.map(vehicle => (
            <Card key={vehicle.id} className="bg-white border border-[#e0e3ea] shadow-xl rounded-2xl">
             <CardHeader>
               <div className="flex items-start justify-between">
@@ -94,7 +125,7 @@ export function VehicleManagement({ vehicles, onAddVehicle }: VehicleManagementP
           </Card>
         ))}
 
-        {vehicles.length === 0 && (
+        {localVehicles.length === 0 && (
            <Card className="col-span-2 bg-white border border-[#e0e3ea] shadow-xl rounded-2xl">
             <CardContent className="p-12 text-center">
               <Car className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
@@ -102,7 +133,7 @@ export function VehicleManagement({ vehicles, onAddVehicle }: VehicleManagementP
               <p className="text-sm text-muted-foreground mb-4">
                 Add your first vehicle to start creating trips
               </p>
-               <Button onClick={onAddVehicle} className="bg-blue-900 hover:bg-blue-800 text-white">
+               <Button onClick={() => setShowAddVehicle(true)} className={`${buttonColor} text-white`}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Vehicle
               </Button>

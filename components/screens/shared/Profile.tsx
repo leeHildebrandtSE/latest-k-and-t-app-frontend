@@ -10,9 +10,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
 interface ProfileProps {
   user: User;
   onLogout?: () => void;
+  theme?: 'admin' | 'driver' | 'commuter';
 }
 
-export function Profile({ user, onLogout }: ProfileProps) {
+export function Profile({ user, onLogout, theme = 'driver' }: ProfileProps) {
+  let buttonColor = 'bg-blue-900 hover:bg-blue-800';
+  if (theme === 'admin') buttonColor = 'bg-green-700 hover:bg-green-800';
+  if (theme === 'commuter') buttonColor = 'bg-orange-600 hover:bg-orange-700';
   return (
     <div className="relative max-w-5xl mx-auto space-y-8 px-4 md:px-8 lg:px-0">
       {/* Top-right profile icon button */}
@@ -66,7 +70,7 @@ export function Profile({ user, onLogout }: ProfileProps) {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button className="bg-blue-900 hover:bg-blue-800 text-white rounded-full px-6 py-2 font-semibold shadow transition-colors duration-200">Save Changes</Button>
+            <Button className={`${buttonColor} text-white rounded-full px-6 py-2 font-semibold shadow transition-colors duration-200`}>Save Changes</Button>
             <Button variant="outline" className="rounded-full px-6 py-2 transition-colors duration-200 hover:bg-blue-50">Cancel</Button>
           </div>
         </Card>
@@ -91,7 +95,7 @@ export function Profile({ user, onLogout }: ProfileProps) {
               <Label htmlFor="confirm-password">Confirm Password</Label>
               <Input id="confirm-password" type="password" className="rounded-lg px-4 py-2" />
             </div>
-            <Button className="w-full bg-blue-900 hover:bg-blue-800 text-white rounded-full font-semibold shadow">Update Password</Button>
+            <Button className={`w-full ${buttonColor} text-white rounded-full font-semibold shadow`}>Update Password</Button>
           </CardContent>
         </Card>
 

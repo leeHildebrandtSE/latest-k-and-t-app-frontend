@@ -1,4 +1,5 @@
 import { AnalyticsData } from '../../../types';
+import { toast } from 'sonner';
 import { StatCard } from '../../StatCard';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Users, Car, Calendar, TrendingUp, DollarSign, Percent } from 'lucide-react';
@@ -8,9 +9,38 @@ interface AdminDashboardProps {
   analytics: AnalyticsData;
   revenueData: Array<{ month: string; revenue: number }>;
   occupancyData: Array<{ route: string; occupancy: number }>;
+  onNavigate?: (tab: string) => void;
 }
 
-export function AdminDashboard({ analytics, revenueData, occupancyData }: AdminDashboardProps) {
+function exportReports(analytics: AnalyticsData, revenueData: Array<{ month: string; revenue: number }>, occupancyData: Array<{ route: string; occupancy: number }>) {
+  // Example: Generate CSV string
+  let csv = 'Metric,Value\n';
+  csv += `Total Drivers,${analytics.totalDrivers}\n`;
+  csv += `Total Commuters,${analytics.totalCommuters}\n`;
+  csv += `Total Trips,${analytics.totalTrips}\n`;
+  csv += `Occupancy Rate,${analytics.occupancyRate}%\n`;
+  csv += `Monthly Revenue,R${analytics.monthlyRevenue}\n`;
+  csv += '\nRevenue Data:\nMonth,Revenue\n';
+  revenueData.forEach(r => {
+    csv += `${r.month},${r.revenue}\n`;
+  });
+  csv += '\nOccupancy Data:\nRoute,Occupancy\n';
+  occupancyData.forEach(o => {
+    csv += `${o.route},${o.occupancy}\n`;
+  });
+  // Download CSV
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'reports.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  toast.success('Reports exported as CSV');
+}
+
+export function AdminDashboard({ analytics, revenueData, occupancyData, onNavigate }: AdminDashboardProps) {
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       <div>
@@ -163,13 +193,16 @@ export function AdminDashboard({ analytics, revenueData, occupancyData }: AdminD
             <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <button className="w-full text-left text-sm text-blue-900 hover:underline">
+            <button className="w-full text-left text-sm text-blue-900 hover:underline" onClick={() => onNavigate && onNavigate('drivers')}>
               View all drivers
             </button>
-            <button className="w-full text-left text-sm text-blue-900 hover:underline">
+            <button className="w-full text-left text-sm text-blue-900 hover:underline" onClick={() => onNavigate && onNavigate('trips')}>
               Manage routes
             </button>
-            <button className="w-full text-left text-sm text-blue-900 hover:underline">
+            <button
+              className="w-full text-left text-sm text-blue-900 hover:underline"
+              onClick={() => onNavigate && onNavigate('reports')}
+            >
               Export reports
             </button>
           </CardContent>

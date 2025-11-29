@@ -25,17 +25,19 @@ export function CommuterHome({ trips, onTripSelect }: CommuterHomeProps) {
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 px-4 md:px-8 lg:px-0">
-      <div className="relative bg-gradient-to-r from-orange-100 to-amber-100 -mx-4 px-4 py-8 lg:mx-0 lg:rounded-2xl lg:px-8 shadow-md overflow-hidden flex items-center">
-        <div className="relative z-10">
+      <div className="flex flex-col md:flex-row relative bg-gradient-to-r from-orange-100 to-amber-100 -mx-4 px-4 py-6 md:py-4 lg:mx-0 lg:rounded-2xl lg:px-8 shadow-md overflow-hidden items-center">
+        <div className="relative z-10 flex-1 w-full md:w-3/5 md:pr-6 lg:pr-8">
           <h1 className="text-4xl font-extrabold mb-2 text-orange-900">Find Your Ride</h1>
           <p className="text-lg text-orange-700">Browse available lift clubs and book your seat</p>
         </div>
-        <img
-          src="/commuter-bags.jpg"
-          alt="Commuter bags background"
-          className="absolute right-0 top-0 h-full w-2/5 object-cover z-0 rounded-r-2xl hidden md:block"
-          style={{ pointerEvents: 'none' }}
-        />
+        <div className="relative w-full md:w-2/5 mt-6 md:mt-0 md:pl-6 lg:pl-8 flex justify-center items-center">
+          <img
+            src="/commuter-bags.jpg"
+            alt="Commuter bags background"
+            className="w-full h-40 md:h-48 lg:h-40 object-cover rounded-2xl md:rounded-r-2xl md:rounded-l-none"
+            style={{ pointerEvents: 'none' }}
+          />
+        </div>
       </div>
 
       {/* Search Bar */}

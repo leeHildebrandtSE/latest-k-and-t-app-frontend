@@ -5,8 +5,11 @@ import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../ui/table';
-import { Search, MoreVertical, Star, Phone, Mail } from 'lucide-react';
+import { Search, MoreVertical, Star, Phone, Mail, Eye, Edit, Trash2 } from 'lucide-react';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../../ui/dropdown-menu';
 import { useState } from 'react';
+import { AddDriverForm } from './AddDriverForm';
+import { DriverDetailsEdit } from './DriverDetailsEdit';
 
 interface UserManagementProps {
   users: Array<Driver | Commuter>;
@@ -15,8 +18,12 @@ interface UserManagementProps {
 
 export function UserManagement({ users, userType }: UserManagementProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [showAddDriver, setShowAddDriver] = useState(false);
+  const [localUsers, setLocalUsers] = useState(users);
+  const [editingDriver, setEditingDriver] = useState<Driver | null>(null);
+  const [viewingDriver, setViewingDriver] = useState<Driver | null>(null);
 
-  const filteredUsers = users.filter(user =>
+  const filteredUsers = localUsers.filter(user =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -24,6 +31,62 @@ export function UserManagement({ users, userType }: UserManagementProps) {
   const isDriver = (user: Driver | Commuter): user is Driver => {
     return 'licenseNumber' in user;
   };
+
+  const handleAddDriver = (driver: { name: string; email: string; licenseNumber: string }) => {
+    // Mock: Add new driver to local state
+    setLocalUsers(prev => [
+      {
+        id: Date.now(),
+        name: driver.name,
+        email: driver.email,
+        licenseNumber: driver.licenseNumber,
+        phone: '',
+        avatar: '',
+        rating: 5,
+        totalTrips: 0,
+        status: 'active',
+        role: 'driver',
+      },
+      ...prev
+    ]);
+  };
+
+  // Conditional screens must be returned before main JSX
+  if (editingDriver) {
+    return (
+      <DriverDetailsEdit
+        driver={editingDriver}
+        onSave={updatedDriver => {
+          setLocalUsers(prev => prev.map(d => d.id === updatedDriver.id ? updatedDriver : d));
+          setEditingDriver(null);
+        }}
+        onCancel={() => setEditingDriver(null)}
+      />
+    );
+  }
+  if (viewingDriver) {
+    return (
+      <div className="max-w-xl mx-auto py-10 px-4">
+        <Card className="shadow-2xl rounded-2xl">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold mb-2">Driver Details</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div><strong>Name:</strong> {viewingDriver.name}</div>
+              <div><strong>Email:</strong> {viewingDriver.email}</div>
+              <div><strong>Phone:</strong> {viewingDriver.phone}</div>
+              <div><strong>License Number:</strong> {viewingDriver.licenseNumber}</div>
+              <div><strong>Rating:</strong> {viewingDriver.rating}</div>
+              <div><strong>Total Trips:</strong> {viewingDriver.totalTrips}</div>
+              <div><strong>Status:</strong> {viewingDriver.status}</div>
+              <Button className="mt-6" variant="outline" onClick={() => setViewingDriver(null)}>Close</Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
@@ -34,9 +97,22 @@ export function UserManagement({ users, userType }: UserManagementProps) {
             Manage {userType === 'drivers' ? 'driver' : 'commuter'} accounts
           </p>
         </div>
-        <Button className="bg-blue-900 hover:bg-blue-800">
-          Add {userType === 'drivers' ? 'Driver' : 'Commuter'}
-        </Button>
+        {userType === 'drivers' ? (
+          <>
+            <Button className="bg-green-700 hover:bg-green-800 text-white" onClick={() => setShowAddDriver(true)}>
+              Add Driver
+            </Button>
+            <AddDriverForm
+              open={showAddDriver}
+              onClose={() => setShowAddDriver(false)}
+              onSubmit={handleAddDriver}
+            />
+          </>
+        ) : (
+          <Button className="bg-green-700 hover:bg-green-800 text-white">
+            Add Commuter
+          </Button>
+        )}
       </div>
 
       {/* Search */}
@@ -124,14 +200,35 @@ export function UserManagement({ users, userType }: UserManagementProps) {
                         <TableCell className="text-sm">{user.destination}</TableCell>
                       </>
                     )}
-                    <TableCell>
-                      <Badge variant="default">Active</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="icon">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
+                      <TableCell>
+                        <Badge variant="default">Active</Badge>
+                      </TableCell>
+                      <TableCell>
+                        {isDriver(user) ? (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xl rounded-xl min-w-[140px]">
+                              <DropdownMenuItem onClick={() => setViewingDriver(user)}>
+                                <Eye className="h-4 w-4 mr-2" /> View
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => setEditingDriver(user)}>
+                                <Edit className="h-4 w-4 mr-2" /> Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => setLocalUsers(prev => prev.filter(d => d.id !== user.id))} className="text-red-600">
+                                <Trash2 className="h-4 w-4 mr-2" /> Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        ) : (
+                          <Button variant="ghost" size="icon">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

@@ -19,10 +19,13 @@ import { AdminLayout } from './components/layouts/AdminLayout';
 import { CommuterHome } from './components/screens/commuter/CommuterHome';
 import { TripDetails } from './components/screens/commuter/TripDetails';
 import { MyTrips } from './components/screens/commuter/MyTrips';
+import { AdminMyTrips } from './components/screens/admin/AdminMyTrips';
 import { AdminDashboard } from './components/screens/admin/AdminDashboard.tsx';
+import { ReportsScreen } from './components/screens/admin/ReportsScreen';
 import { UserManagement } from './components/screens/admin/UserManagement';
 import { VehicleManagement } from './components/screens/driver/VehicleManagement';
 import { Profile } from './components/screens/shared/Profile';
+import { AccountSettings } from './components/screens/shared/AccountSettings';
 import { Toaster, toast } from 'sonner';
 import { Notifications } from './components/screens/shared/Notifications';
 import { UserRole, Trip, Notification, TripRequest, Vehicle } from './types';
@@ -230,8 +233,11 @@ export function App() {
             />
           )}
           {activeTab === 'profile' && (
-            <Profile user={currentUser} onLogout={handleLogout} />
+            <Profile user={currentUser} onLogout={handleLogout} theme="commuter" />
           )}
+            {activeTab === 'account-settings' && (
+              <AccountSettings theme="commuter" />
+            )}
         </CommuterLayout>
         <Toaster position="top-right" />
       </>
@@ -285,6 +291,9 @@ export function App() {
           {activeTab === 'profile' && (
             <Profile user={currentUser} onLogout={handleLogout} />
           )}
+            {activeTab === 'account-settings' && (
+              <AccountSettings theme="driver" />
+            )}
         </DriverLayout>
         <Toaster position="top-right" />
       </>
@@ -295,7 +304,7 @@ export function App() {
   if (selectedRole === 'admin') {
     // Only allow valid admin tabs
     const validAdminTabs = [
-      'dashboard', 'drivers', 'vehicles', 'trips', 'settings'
+      'dashboard', 'drivers', 'vehicles', 'trips', 'reports', 'settings', 'account-settings'
     ];
     const safeTab = validAdminTabs.includes(activeTab) ? activeTab : 'dashboard';
     return (
@@ -310,24 +319,39 @@ export function App() {
               analytics={mockAnalytics}
               revenueData={mockRevenueData}
               occupancyData={mockOccupancyData}
+              onNavigate={setActiveTab}
             />
           )}
           {safeTab === 'drivers' && (
-            <UserManagement users={mockDrivers} userType="drivers" />
+            <UserManagement users={mockDrivers} userType="drivers" theme="admin" />
           )}
           {safeTab === 'vehicles' && (
             <VehicleManagement
               vehicles={mockVehicles}
               onAddVehicle={() => toast.info('Add vehicle feature')}
+              theme="admin"
             />
           )}
           {safeTab === 'trips' && (
-            <MyTrips trips={trips} />
+            <AdminMyTrips trips={trips} onTripUpdate={updatedTrip => {
+              // Mock update logic: replace trip in trips array
+              const idx = trips.findIndex(t => t.id === updatedTrip.id);
+              if (idx !== -1) {
+                trips[idx] = updatedTrip;
+                toast.success('Trip updated successfully!');
+              }
+            }} />
+          )}
+          {safeTab === 'reports' && (
+            <ReportsScreen theme="admin" />
           )}
           {/* Financials tab removed as requested */}
-          {safeTab === 'settings' && (
-            <Profile user={currentUser} onLogout={handleLogout} />
+          {(safeTab === 'settings' || safeTab === 'profile') && (
+            <Profile user={currentUser} onLogout={handleLogout} theme="admin" />
           )}
+            {safeTab === 'account-settings' && (
+              <AccountSettings theme="admin" />
+            )}
         </AdminLayout>
         <Toaster position="top-right" />
       </>
