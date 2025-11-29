@@ -36,7 +36,7 @@ export function UserManagement({ users, userType }: UserManagementProps) {
     // Mock: Add new driver to local state
     setLocalUsers(prev => [
       {
-        id: Date.now(),
+        id: Date.now().toString(),
         name: driver.name,
         email: driver.email,
         licenseNumber: driver.licenseNumber,
@@ -44,6 +44,7 @@ export function UserManagement({ users, userType }: UserManagementProps) {
         avatar: '',
         rating: 5,
         totalTrips: 0,
+        vehicles: [],
         status: 'active',
         role: 'driver',
       },

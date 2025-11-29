@@ -12,7 +12,8 @@ export const mockDrivers: Driver[] = [
     licenseNumber: 'DL-12345678',
     rating: 4.8,
     totalTrips: 245,
-    vehicles: []
+    vehicles: [],
+    status: 'active'
   },
   {
     id: 'd2',
@@ -24,7 +25,8 @@ export const mockDrivers: Driver[] = [
     licenseNumber: 'DL-87654321',
     rating: 4.9,
     totalTrips: 312,
-    vehicles: []
+    vehicles: [],
+    status: 'active'
   },
   {
     id: 'd3',
@@ -36,7 +38,8 @@ export const mockDrivers: Driver[] = [
     licenseNumber: 'DL-23456789',
     rating: 4.7,
     totalTrips: 189,
-    vehicles: []
+    vehicles: [],
+    status: 'active'
   }
 ];
 

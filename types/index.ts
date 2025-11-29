@@ -1,4 +1,3 @@
-export type { Driver };
 // Type definitions for K & T Transport App
 
 export type UserRole = 'commuter' | 'driver' | 'admin';
@@ -23,6 +22,8 @@ export interface Commuter extends User {
   destination: string;
 }
 
+
+export interface Driver extends User {
   licenseNumber: string;
   rating: number;
   totalTrips: number;

@@ -18,14 +18,15 @@ export function VehicleManagement({ vehicles, onAddVehicle, theme = 'driver' }: 
   const handleAddVehicle = (vehicle: { make: string; model: string; registrationNumber: string; color: string; year: string }) => {
     setLocalVehicles(prev => [
       {
-        id: Date.now(),
+        id: Date.now().toString(),
         make: vehicle.make,
         model: vehicle.model,
         registrationNumber: vehicle.registrationNumber,
         color: vehicle.color,
-        year: vehicle.year,
+        year: Number(vehicle.year),
         seats: 0,
         status: 'active',
+        driverId: 'mock',
       },
       ...prev
     ]);

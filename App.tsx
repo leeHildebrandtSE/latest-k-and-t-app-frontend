@@ -323,7 +323,7 @@ export function App() {
             />
           )}
           {safeTab === 'drivers' && (
-            <UserManagement users={mockDrivers} userType="drivers" theme="admin" />
+            <UserManagement users={mockDrivers} userType="drivers" />
           )}
           {safeTab === 'vehicles' && (
             <VehicleManagement
